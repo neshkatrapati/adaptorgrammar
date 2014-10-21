@@ -11,8 +11,8 @@ class Grammar {
  private:
   vector<vector<char *> > rules;
   bool isCNF;
-  
  public:
+  char * startSymbol;
   Grammar ();
   Grammar (FILE *fp);
   vector <vector<char *> > getRules ();
@@ -26,22 +26,40 @@ class Grammar {
   int findRule(vector<char *> rule);
   Grammar pruneGrammar(vector <int> *prunables);
   vector<vector <char *> > reverseSearch(vector<char *> rhs);
-  
+  char * getStartSymbol() { return this -> startSymbol; };
 };
 
 Grammar::Grammar(){
   isCNF = false;
+  startSymbol = (char *) malloc(20 * sizeof(char));
+  startSymbol[0] = '\0';
+}
+char * shiftString(char *str){
+  char * newString; 
+  newString = (char *) malloc(20 * sizeof(char));
+  newString[0] = '\0';
+  for(int i=0; i < strlen(str) - 1; i++){
+    newString[i] = str[i+1];
+  }
+  return newString;
 }
 Grammar::Grammar(FILE *fp) {
   size_t len = 0;
   ssize_t read;
   char *line = NULL; 
-  char lhs [10];
+  char * lhs;
   char rhs [100];
+  lhs = (char *) malloc(20 * sizeof(char));
   int offset = 0, charcount=0;
   while ((read = getline(&line, &len, fp)) != -1){
     vector<char *> rule;
     sscanf(line, "%s -> %s%n", lhs, rhs, &charcount);
+    if(lhs[0] == '!'){
+      lhs = shiftString(lhs);
+      this -> startSymbol = strdup(lhs);
+      this -> startSymbol[strlen(this -> startSymbol)] = '\0';
+      //      cout << this -> startSymbol << endl;
+    }
     offset = charcount;
     rule.push_back(strdup(lhs));
     rule.push_back(strdup(rhs));
@@ -221,6 +239,8 @@ Grammar Grammar::toCNF () {
      ruleToCNF(i, &prunables);
   }
    cnfGrammar = pruneGrammar(&prunables);
+   //   cout << this -> startSymbol;
+   cnfGrammar.startSymbol = this -> startSymbol;
    return cnfGrammar;
 }
 vector <vector<char *> > Grammar::reverseSearch(vector<char *> rhs){

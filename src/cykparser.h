@@ -254,11 +254,11 @@ void CYKParser::parseMulti(CYKCell ***cellarray, int i, int j){
   }
 }
 
-vector<ParseTreeNode> getFinalParses(CYKCell *cell){
+vector<ParseTreeNode> getFinalParses(CYKCell *cell, char * startSymbol){
   vector <ParseTreeNode> productions  = cell -> getProductions();
   vector <ParseTreeNode> newProductions;
   for(int i=0; i<productions.size(); i++){
-    if (strcmp(productions[i].getLabel(), "WORD") == 0){
+    if (strcmp(productions[i].getLabel(), startSymbol) == 0){
       newProductions.push_back(productions[i]);
     }
   }
@@ -295,8 +295,7 @@ vector<ParseTreeNode> CYKParser::parse (vector <char *> input){
     }
     //    cout << endl;
   }
-  
-  vector<ParseTreeNode> newParses = getFinalParses(cellarray[0][input_len -1]);
+  vector<ParseTreeNode> newParses = getFinalParses(cellarray[0][input_len -1], g.startSymbol);
   return newParses;
 }
 
