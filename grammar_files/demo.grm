@@ -1,0 +1,11 @@
+S -> NP VP
+NP -> DT NP
+VP -> V NP    
+VP -> VP PP
+VP -> AUX VP PP
+DT -> .*
+NP -> N
+N -> .*
+V -> .*
+PP -> @c NP
+AUX -> .* 
